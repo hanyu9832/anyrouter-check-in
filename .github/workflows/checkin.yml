@@ -1,9 +1,18 @@
 name: AnyRouter 自动签到
 on:
   schedule:
-    - cron: '0 */6 * * *'
+    - cron: '0 */8 * * *'
+    - cron: '30 */8 * * *'
   workflow_dispatch:
     inputs:
+      group:
+        description: 选择签到账号组
+        required: true
+        default: A
+        type: choice
+        options:
+          - A
+          - B
       debug:
         description: 开启调试模式（截图 artifact、详细日志）
         required: false
@@ -94,7 +103,7 @@ jobs:
         CHECKIN_HEADLESS: false
         CHECKIN_HUMANIZE: true
         CHECKIN_WAIT_TIMEOUT_MS: 120000
-        ANYROUTER_ACCOUNTS: ${{ secrets.ANYROUTER_ACCOUNTS }}
+        ANYROUTER_ACCOUNTS: ${{ (github.event.schedule == '30 */8 * * *' || github.event.inputs.group == 'B') && secrets.ANYROUTER_ACCOUNTS_GROUP_B || secrets.ANYROUTER_ACCOUNTS_GROUP_A }}
         PROVIDERS: ${{ secrets.PROVIDERS }}
         DINGDING_WEBHOOK: ${{ secrets.DINGDING_WEBHOOK }}
         EMAIL_USER: ${{ secrets.EMAIL_USER }}
